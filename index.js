@@ -487,6 +487,11 @@ class UniversalEmailMCPServer {
     }
   }
 
+  // 发送 IMAP ID（163等网易邮箱要求客户端标识自身，否则报 Unsafe Login）
+  sendImapId(imap, callback) {
+    imap._enqueue('ID ("name" "MyClaude" "version" "1.0" "vendor" "Custom")', callback);
+  }
+
   // 创建POP3连接
   createPOP3Connection() {
     try {
@@ -633,6 +638,7 @@ class UniversalEmailMCPServer {
       const imap = this.createIMAPConnection();
 
       imap.once('ready', () => {
+        this.sendImapId(imap, () => {
         imap.openBox('INBOX', true, (err, box) => {
           if (err) {
             imap.end();
@@ -742,6 +748,7 @@ class UniversalEmailMCPServer {
             });
           });
         });
+        }); // sendImapId
       });
 
       imap.once('error', (err) => {
@@ -879,6 +886,7 @@ class UniversalEmailMCPServer {
       const imap = this.createIMAPConnection();
 
       imap.once('ready', () => {
+        this.sendImapId(imap, () => {
         imap.openBox('INBOX', true, (err, box) => {
           if (err) {
             imap.end();
@@ -945,6 +953,7 @@ class UniversalEmailMCPServer {
             reject(err);
           });
         });
+        }); // sendImapId
       });
 
       imap.once('error', (err) => {
